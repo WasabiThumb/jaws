@@ -41,3 +41,21 @@ key below to know what has been implemented.** ⚠️
 | :-: | :-: | :-: | :-: |
 | Client | ❌ |  ✔️  | ✔️ |
 | Server | ✔️ | ❌  | 🚧 |
+
+
+## Using
+Don't. You shouldn't use this yet. However, if you would like to anyways (and I'm mostly writing
+this here for myself), here's a guide.
+
+### For Java (17)
+1. Clone the repository and enter the ``java`` directory.
+2. Do ``./gradlew clean publishToMavenLocal`` (``./gradlew.bat`` for windows)
+3. Add ``xyz.wasabicodes.jaws`` as a dependency to your project
+  - [Maven](https://paste.gg/p/anonymous/700fa63f1dce4a36bca6aa4e3bc1e82d/files/8e8cc77e07c34c44b5b50dcee6b6b60f/raw)
+  - Gradle
+    - Groovy: ``implementation 'xyz.wasabicodes:jaws:1.0.0'``
+    - Kotlin DSL: ``implementation("xyz.wasabicodes:jaws:1.0.0")``
+
+### For NodeJS
+Enter your project directory and run ``npm install 'https://gitpkg.now.sh/WasabiThumb/jaws/typescript?master'``.
+This is a very ugly & very temporary solution.
