@@ -1,0 +1,29 @@
+{
+  "@comment": "This is a temporary package.json to allow using this GitHub repository as an NPM dependency. The canonical package.json is located in \"typescript\".",
+  "name": "jaws",
+  "version": "1.0.0",
+  "description": "Java WebSocket",
+  "main": "typescript/dist/index.js",
+  "types": "typescript/types/index.d.ts",
+  "scripts": {
+    "postinstall": "tsc --project ./typescript",
+    "test": "tsc --project ./typescript && node typescript/test/index.js"
+  },
+  "author": "WasabiThumb",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/js-md5": "^0.7.2",
+    "@types/pako": "^2.0.3",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.4.3",
+    "@stablelib/utf8": "^1.0.2",
+    "browser-or-node": "^3.0.0-pre.0",
+    "ieee754": "^1.2.1",
+    "isomorphic-ws": "^5.0.0",
+    "js-md5": "^0.8.3",
+    "long": "^5.2.3",
+    "pako": "^2.1.0",
+    "tweetnacl": "^1.0.3",
+    "ws": "^8.16.0"
+  }
+}
