@@ -57,5 +57,5 @@ this here for myself), here's a guide.
     - Kotlin DSL: ``implementation("xyz.wasabicodes:jaws:1.0.0")``
 
 ### For NodeJS
-Enter your project directory and run ``npm install 'npm install 'https://gitpkg.now.sh/WasabiThumb/jaws?master''``.
+Enter your project directory and run ``npm install 'npm install 'https://gitpkg.now.sh/WasabiThumb/jaws?master'``.
 This is a very ugly & very temporary solution.
