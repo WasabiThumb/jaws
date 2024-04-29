@@ -2,6 +2,7 @@ import java.io.FileOutputStream
 
 plugins {
     id("java")
+    id("maven-publish")
 }
 
 val protocolVersion: Byte = 0
@@ -42,4 +43,20 @@ tasks.register("substitutions") {
 
 tasks.processResources {
     dependsOn("substitutions")
+}
+
+tasks.compileJava {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "xyz.wasabicodes"
+            artifactId = "jaws"
+            version = "1.${protocolVersion}.${patchVersion}"
+            from(components["java"])
+        }
+    }
 }

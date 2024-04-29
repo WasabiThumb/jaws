@@ -24,9 +24,9 @@ class JawsTest {
         srv.registerFacets(PingServerFacet.class, LobbyServerFacet.class);
         srv.start();
 
-        Jaws.getLogger().info("Waiting 200 seconds...");
+        Jaws.getLogger().info("Waiting 5 seconds...");
         try {
-            TimeUnit.SECONDS.sleep(200L);
+            TimeUnit.SECONDS.sleep(5L);
             srv.stop();
         } catch (InterruptedException ignored) { }
     }
