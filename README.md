@@ -18,11 +18,12 @@ key below to know what has been implemented.** ⚠️
 
 ## Features
 
-- ✅ Communication between Java & JavaScript environments (Browser, NodeJS)
+- ✅ Communication between Java & JavaScript environments ([Browser](#for-the-browser), [NodeJS](#for-nodejs))
 - 🚧 User data storage with options for persistence
 - 🚧 Lobbies & matchmaking
   - ✅ Basic lobby creation & joining
   - 🚧 Chat
+    - Almost done, some loose ends on the client
   - 🚧 Matchmaking (with regional load balancing)
 - 🐛 Packet compression
   - ZLib is functional on the client. Server is not a fan of the
@@ -51,11 +52,32 @@ this here for myself), here's a guide.
 1. Clone the repository and enter the ``java`` directory.
 2. Do ``./gradlew clean publishToMavenLocal`` (``./gradlew.bat`` for windows)
 3. Add ``xyz.wasabicodes.jaws`` as a dependency to your project
-  - [Maven](https://paste.gg/p/anonymous/700fa63f1dce4a36bca6aa4e3bc1e82d/files/8e8cc77e07c34c44b5b50dcee6b6b60f/raw)
-  - Gradle
-    - Groovy: ``implementation 'xyz.wasabicodes:jaws:1.0.0'``
-    - Kotlin DSL: ``implementation("xyz.wasabicodes:jaws:1.0.0")``
+   - [Maven](https://paste.gg/p/anonymous/700fa63f1dce4a36bca6aa4e3bc1e82d/files/8e8cc77e07c34c44b5b50dcee6b6b60f/raw)
+   - Gradle
+     - Groovy: ``implementation 'xyz.wasabicodes:jaws:1.0.0'``
+     - Kotlin DSL: ``implementation("xyz.wasabicodes:jaws:1.0.0")``
+
+Reference the [test source for Java](https://github.com/WasabiThumb/jaws/blob/master/java/src/test/java/xyz/wasabicodes/jaws/JawsTest.java) for examples of how to use the library.
 
 ### For NodeJS
 Enter your project directory and run ``npm install 'https://gitpkg.now.sh/WasabiThumb/jaws?master'``.
 This is a very ugly & very temporary solution.
+Reference the [test source for NodeJS](https://github.com/WasabiThumb/jaws/blob/master/typescript/test/index.js) for examples of how to use the library.
+
+### For the Browser
+Create a NodeJS project and install the Jaws client as described above. Use a tool such as
+[WebPack](https://github.com/webpack/webpack) to create a bundle for the browser.
+\
+\
+See [this summary from caniuse.com](https://caniuse.com/mdn-javascript_builtins_arraybuffer,typedarrays,promises,mdn-api_websocket,mdn-api_websocket_message_event,es5#summary)
+for info on what browsers are supported. As of writing the summary suggests that ``96.48%`` of browsers
+can run the Jaws client. This rises to ``98.32%`` with [polyfills for es5 and Promise](https://polyfill.io/),
+the limiting factor being support for the [WebSocket API](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket) itself.
+Support could theoretically reach nearly ``100%`` with [this cursed Flash Player implementation of WebSocket](https://github.com/gimite/web-socket-js)
+as well as TypedArray polyfills.
+\
+\
+Keep in mind that "insecure websockets" (``ws://`` instead of ``wss://``) can only be used when the page protocol is
+plain HTTP. Using HTTPS in modern browsers disallows use of "insecure websockets". If you elect to use Jaws
+over an insecure websocket, the data will remain encrypted. You may choose to disable the Jaws native packet
+encryption if you are using a secure websocket (``wss://``).

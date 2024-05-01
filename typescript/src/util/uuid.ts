@@ -2,6 +2,7 @@ import Long from "long";
 import nacl from "tweetnacl";
 import * as utf8 from "@stablelib/utf8";
 import { md5 } from 'js-md5';
+import { StringUtil } from "./string";
 
 
 const REGEX: RegExp = /^([\da-f]{8})(-?)([\da-f]{4})\2([\da-f]{4})\2([\da-f]{4})\2([\da-f]{12})$/i
@@ -77,10 +78,7 @@ export default class UUID {
     }
 
     get version(): number {
-        return this.mostSignificantBits
-            .shr(12)
-            .and(15)
-            .toInt();
+        return (this.mostSignificantBits.low >> 12) & 15;
     }
 
     get variant(): number {
@@ -105,6 +103,10 @@ export default class UUID {
         let cmp: number = this.mostSignificantBits.compare(other.mostSignificantBits);
         if (cmp === 0) cmp = this.leastSignificantBits.compare(other.leastSignificantBits);
         return cmp;
+    }
+
+    get [StringUtil.TO_STRING_TAG](): string {
+        return this.toString();
     }
 
 }

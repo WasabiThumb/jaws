@@ -27,16 +27,11 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.UUID;
 
 public class JawsServer extends WebSocketServer implements FacetContext<JawsServer>, ChatSender {
 
     public static final UUID SYSTEM_UUID = new UUID(0L, 0L);
-    public static JawsServer RUNNING_INSTANCE = null;
-    public static ServerConfig activeConfig() {
-        return Objects.requireNonNull(RUNNING_INSTANCE).getConfig();
-    }
 
     private final ServerConfig cfg;
     private final EncryptKey key;
@@ -54,7 +49,6 @@ public class JawsServer extends WebSocketServer implements FacetContext<JawsServ
     @Override
     public void run() {
         this.facets.lock(this);
-        RUNNING_INSTANCE = this;
         super.run();
     }
 

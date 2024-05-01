@@ -13,9 +13,16 @@ public class ServerConfigKey<T> {
 
     public static final ServerConfigKey<Integer> PORT = integer("port", 0xB015);
 
-    public static final ServerConfigKey<Integer> CHAT_MAX_LENGTH = integer("chatMaxLength", 260);
+    /**
+     * Absolute max is 16384 (65536 bytes). This limitation is synthetic.
+      */
+    public static final ServerConfigKey<Integer> CHAT_MAX_MESSAGE_LENGTH = integer("chatMaxMessageLength", 260);
 
     public static final ServerConfigKey<Integer> CHAT_HISTORY_LENGTH = integer("chatHistoryLength", 100);
+
+    public static final ServerConfigKey<Boolean> LOBBY_JOIN_MESSAGES = flag("lobbyJoinMessages", true);
+
+    public static final ServerConfigKey<Boolean> LOBBY_LEAVE_MESSAGES = flag("lobbyLeaveMessages", true);
 
     public static final ServerConfigKey<EncryptMethod> ENCRYPTION = enumeration("encryption", EncryptMethod.class, EncryptMethod.NACL);
 
@@ -29,6 +36,10 @@ public class ServerConfigKey<T> {
 
     static <T extends Enum<T>> ServerConfigKey<T> enumeration(String key, Class<T> clazz, T value) {
         return new ServerConfigKey<>(key, ServerConfigDataType.enumeration(clazz), value);
+    }
+
+    static ServerConfigKey<Boolean> flag(String key, boolean value) {
+        return new ServerConfigKey<>(key, ServerConfigDataType.BOOLEAN, value);
     }
 
     public static ServerConfigKey<?>[] values() {

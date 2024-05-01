@@ -3,6 +3,12 @@ import * as utf8 from "@stablelib/utf8";
 
 export const StringUtil = new class {
 
+    readonly TO_STRING_TAG: string | symbol = ((w) => {
+        let s;
+        if (!!w && !!(s = w["Symbol"]) && !!s["toStringTag"]) return s["toStringTag"];
+        return "Symbol.toStringTag";
+    })(typeof window === "object" ? window : global);
+
     /**
      * Decode a possibly null-terminated array of UTF-8 bytes.
      */

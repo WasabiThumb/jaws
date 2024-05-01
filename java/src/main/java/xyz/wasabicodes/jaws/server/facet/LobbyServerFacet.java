@@ -1,11 +1,13 @@
 package xyz.wasabicodes.jaws.server.facet;
 
+import xyz.wasabicodes.jaws.packet.PacketIdentifier;
 import xyz.wasabicodes.jaws.packet.PacketIn;
 import xyz.wasabicodes.jaws.packet.impl.PacketInLobbyCreate;
 import xyz.wasabicodes.jaws.packet.impl.PacketInLobbyJoin;
 import xyz.wasabicodes.jaws.packet.impl.PacketInLobbyRequestPeerKey;
 import xyz.wasabicodes.jaws.packet.impl.PacketOutLobbyPeerKey;
 import xyz.wasabicodes.jaws.server.JawsServer;
+import xyz.wasabicodes.jaws.server.config.ServerConfigKey;
 import xyz.wasabicodes.jaws.server.struct.ServerLobby;
 import xyz.wasabicodes.jaws.server.struct.ServerUser;
 import xyz.wasabicodes.jaws.struct.User;
@@ -45,13 +47,30 @@ public class LobbyServerFacet extends ServerFacetAdapter {
         }
     }
 
+    public void cleanupLobbyIfEmpty(ServerLobby sl) {
+        if (sl == null) return;
+        if (!sl.getUsers().isEmpty()) return;
+        int id = this.optimus.decode(sl.getIdentifier());
+        long stamp = this.lobbyLock.readLock();
+        try {
+            if (!Objects.equals(this.lobbyMap.get(id), sl)) return;
+            stamp = this.lobbyLock.tryConvertToWriteLock(stamp);
+            if (stamp != 0L) this.lobbyMap.remove(id);
+        } finally {
+            this.lobbyLock.unlock(stamp);
+        }
+    }
+
     @Override
     public void onMessage(JawsServer ctx, ServerUser user, PacketIn received) {
+        final PacketIdentifier pid = received.getIdentifier();
+        if (!pid.inRange(5, 13)) return; // FIXME: Magic numbers
         if (received instanceof PacketInLobbyCreate create) {
             ServerLobby sl = createLobby(create.name, user);
             sl.broadcastData(create.transaction);
         } else if (received instanceof PacketInLobbyJoin join) {
             int id = this.optimus.decode(join.lobbyCode);
+            final ServerLobby old = user.getLobby();
             ServerLobby sl;
             long stamp = this.lobbyLock.readLock();
             try {
@@ -62,6 +81,10 @@ public class LobbyServerFacet extends ServerFacetAdapter {
             } finally {
                 this.lobbyLock.unlock(stamp);
             }
+            if (ctx.getConfig().getBoolean(ServerConfigKey.LOBBY_JOIN_MESSAGES)) {
+                sl.getChat().broadcast("* " + user.getName() + " has joined the lobby");
+            }
+            this.cleanupLobbyIfEmpty(old);
         } else if (received instanceof PacketInLobbyRequestPeerKey request) {
             ServerLobby sl = user.getLobby();
             if (sl == null) return;
@@ -73,6 +96,10 @@ public class LobbyServerFacet extends ServerFacetAdapter {
             response.peerID = request.peerID;
             response.keyData = subject.getKey().export();
             user.sendPacket(response);
+        } else {
+            ServerLobby sl = user.getLobby();
+            if (sl == null) return;
+            sl.getChat().handlePacket(user, received);
         }
     }
 
@@ -80,18 +107,13 @@ public class LobbyServerFacet extends ServerFacetAdapter {
     public void onDisconnect(JawsServer ctx, ServerUser user) {
         ServerLobby sl = user.getLobby();
         if (sl == null) return;
-        if (sl.removeUser(user)) sl.broadcastData(-1);
-        if (!sl.getUsers().isEmpty()) return;
-
-        int id = this.optimus.decode(sl.getIdentifier());
-        long stamp = this.lobbyLock.readLock();
-        try {
-            if (!Objects.equals(this.lobbyMap.get(id), sl)) return;
-            stamp = this.lobbyLock.tryConvertToWriteLock(stamp);
-            if (stamp != 0L) this.lobbyMap.remove(id);
-        } finally {
-            this.lobbyLock.unlock(stamp);
+        if (sl.removeUser(user)) {
+            sl.broadcastData(-1);
+            if (ctx.getConfig().getBoolean(ServerConfigKey.LOBBY_LEAVE_MESSAGES)) {
+                sl.getChat().broadcast("* " + user.getName() + " has left the lobby");
+            }
         }
+        this.cleanupLobbyIfEmpty(sl);
     }
 
     //

@@ -1,6 +1,7 @@
 package xyz.wasabicodes.jaws.struct.lobby;
 
 import xyz.wasabicodes.jaws.struct.User;
+import xyz.wasabicodes.jaws.struct.lobby.chat.LobbyChat;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -22,6 +23,8 @@ public interface Lobby {
     }
 
     User getOwner();
+
+    LobbyChat getChat();
 
     default boolean isOwner(User u) {
         return Objects.equals(this.getOwner(), u);

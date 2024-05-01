@@ -1,9 +1,28 @@
 import {User} from "./user";
 import nacl from "tweetnacl";
+import {ChatMessage} from "./chat";
+
+export interface LobbyChat {
+
+    readonly lobby: Lobby;
+
+    readonly maxMessageLength: number;
+
+    getMessageHistory(): ChatMessage[];
+
+    broadcast(content: string): ChatMessage;
+
+    whisper(receiver: User, content: string): ChatMessage;
+
+    refresh(): Promise<void>;
+
+}
 
 export type Lobby = {
 
     readonly code: string;
+
+    readonly chat: LobbyChat;
 
     name: string;
 

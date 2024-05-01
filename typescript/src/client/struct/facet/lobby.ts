@@ -49,6 +49,10 @@ export default class LobbyClientFacet extends ClientFacetAdapter {
     onMessage(ctx: JawsClient, user: User, received: Packet): void {
         if (received instanceof PacketOutLobbyData) {
             this._processDataPacket(received, ctx.user);
+        } else {
+            const { lobby } = ctx.user;
+            if (!lobby) return;
+            lobby.chat.handlePacket(received);
         }
     }
 
@@ -68,7 +72,7 @@ export default class LobbyClientFacet extends ClientFacetAdapter {
         if (packet.lobbyCode === user.lobby?.intCode) {
             ob = user.lobby!;
         } else {
-            ob = new ClientLobby(packet.lobbyCode);
+            ob = new ClientLobby(this._client!, packet.lobbyCode);
         }
         ob.publicMatchmaking = packet.isPublic;
         ob.name = packet.lobbyName;

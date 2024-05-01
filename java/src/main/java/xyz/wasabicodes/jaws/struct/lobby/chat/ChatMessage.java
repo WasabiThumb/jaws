@@ -6,6 +6,7 @@ import xyz.wasabicodes.jaws.server.JawsServer;
 import xyz.wasabicodes.jaws.struct.User;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.UUID;
 
 public sealed interface ChatMessage {
@@ -15,6 +16,8 @@ public sealed interface ChatMessage {
     //
 
     ChatSender getSender();
+
+    void setSender(ChatSender sender) throws IllegalStateException;
 
     default UUID getSenderID() {
         ChatSender sender = this.getSender();
@@ -34,6 +37,8 @@ public sealed interface ChatMessage {
         return this.getType() == Type.WHISPER;
     }
 
+    boolean isLikelyNotLongerThan(int len);
+
     //
 
     enum Type {
@@ -46,6 +51,7 @@ public sealed interface ChatMessage {
 
     final class System implements ChatMessage {
 
+        private ChatSender sender = null;
         private final String message;
         public System(String message) {
             this.message = message;
@@ -53,7 +59,18 @@ public sealed interface ChatMessage {
 
         @Override
         public ChatSender getSender() {
-            return JawsServer.RUNNING_INSTANCE;
+            return Objects.requireNonNull(this.sender);
+        }
+
+        @Override
+        public void setSender(ChatSender sender) throws IllegalStateException {
+            if (this.sender != null) throw new IllegalStateException("Cannot set message sender more than once");
+            this.sender = sender;
+        }
+
+        @Override
+        public UUID getSenderID() {
+            return JawsServer.SYSTEM_UUID;
         }
 
         @Override
@@ -76,22 +93,35 @@ public sealed interface ChatMessage {
             return Type.SYSTEM;
         }
 
+        @Override
+        public boolean isLikelyNotLongerThan(int len) {
+            return len >= this.message.length();
+        }
     }
 
     //
 
     final class Basic implements ChatMessage {
 
-        private final User sender;
+        private User sender = null;
         private final byte[] message;
-        public Basic(User sender, byte[] message) {
-            this.sender = sender;
+        public Basic(byte[] message) {
             this.message = message;
         }
 
         @Override
         public User getSender() {
-            return this.sender;
+            return Objects.requireNonNull(this.sender);
+        }
+
+        @Override
+        public void setSender(ChatSender sender) throws IllegalStateException {
+            if (this.sender != null) throw new IllegalStateException("Cannot set message sender more than once");
+            if (sender instanceof User u) {
+                this.sender = u;
+            } else {
+                throw new IllegalArgumentException("Cannot set message sender to a non-user: " + sender);
+            }
         }
 
         @Override
@@ -114,24 +144,38 @@ public sealed interface ChatMessage {
             return Type.BASIC;
         }
 
+        @Override
+        public boolean isLikelyNotLongerThan(int len) {
+            return len >= this.getMessage().length();
+        }
+
     }
 
     //
 
     final class Whisper implements ChatMessage {
 
-        private final User sender;
+        private User sender = null;
         private final UUID receiverID;
         private final byte[] encryptedMessage;
-        public Whisper(User sender, UUID receiverID, byte[] encryptedMessage) {
-            this.sender = sender;
+        public Whisper(UUID receiverID, byte[] encryptedMessage) {
             this.receiverID = receiverID;
             this.encryptedMessage = encryptedMessage;
         }
 
         @Override
         public User getSender() {
-            return this.sender;
+            return Objects.requireNonNull(this.sender);
+        }
+
+        @Override
+        public void setSender(ChatSender sender) throws IllegalStateException {
+            if (this.sender != null) throw new IllegalStateException("Cannot set message sender more than once");
+            if (sender instanceof User u) {
+                this.sender = u;
+            } else {
+                throw new IllegalArgumentException("Cannot set message sender to a non-user: " + sender);
+            }
         }
 
         public UUID getReceiverID() {
@@ -162,6 +206,11 @@ public sealed interface ChatMessage {
         @Override
         public Type getType() {
             return Type.WHISPER;
+        }
+
+        @Override
+        public boolean isLikelyNotLongerThan(int len) {
+            return ((len << 2) + 40) >= this.encryptedMessage.length;
         }
 
     }

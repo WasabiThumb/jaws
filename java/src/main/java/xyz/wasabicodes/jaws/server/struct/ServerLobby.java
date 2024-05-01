@@ -5,6 +5,7 @@ import xyz.wasabicodes.jaws.server.JawsServer;
 import xyz.wasabicodes.jaws.struct.User;
 import xyz.wasabicodes.jaws.struct.lobby.Lobby;
 import xyz.wasabicodes.jaws.struct.lobby.LobbyCode;
+import xyz.wasabicodes.jaws.struct.lobby.chat.LobbyChat;
 
 import java.util.*;
 
@@ -12,6 +13,7 @@ public class ServerLobby implements Lobby {
 
     private final JawsServer server;
     private final int id;
+    private final ServerLobbyChat chat;
     private String name;
     private final Set<ServerUser> users = Collections.synchronizedSet(new HashSet<>());
     private ServerUser owner = null;
@@ -20,10 +22,16 @@ public class ServerLobby implements Lobby {
         this.server = server;
         this.id = id;
         this.name = name;
+        this.chat = new ServerLobbyChat(this);
     }
 
     public JawsServer getServer() {
         return this.server;
+    }
+
+    @Override
+    public ServerLobbyChat getChat() {
+        return this.chat;
     }
 
     @Override

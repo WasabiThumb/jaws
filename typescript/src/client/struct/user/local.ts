@@ -50,4 +50,12 @@ export class ClientLocalUser implements ClientUser {
         this.connection.sendPacket(packet);
     }
 
+    isSystem(): false {
+        return false;
+    }
+
+    isUser(): true {
+        return true;
+    }
+
 }

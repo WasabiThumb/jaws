@@ -9,6 +9,12 @@ import PacketOutPong from "./impl/out/pong";
 import PacketInLobbyCreate from "./impl/in/lobbyCreate";
 import PacketInLobbyJoin from "./impl/in/lobbyJoin";
 import PacketOutLobbyData from "./impl/out/lobbyData";
+import PacketInLobbyChat from "./impl/in/lobbyChat";
+import PacketInLobbyRequestChatHistory from "./impl/in/lobbyRequestChatHistory";
+import PacketOutLobbyChat from "./impl/out/lobbyChat";
+import PacketOutLobbyChatHistory from "./impl/out/lobbyChatHistory";
+import PacketInLobbyRequestPeerKey from "./impl/in/lobbyRequestPeerKey";
+import PacketOutLobbyPeerKey from "./impl/out/lobbyPeerKey";
 
 type PacketClass = { new(): Packet };
 export default abstract class PacketSerializer {
@@ -26,6 +32,12 @@ export default abstract class PacketSerializer {
             PacketInLobbyCreate,
             PacketInLobbyJoin,
             PacketOutLobbyData,
+            PacketInLobbyRequestPeerKey,
+            PacketOutLobbyPeerKey,
+            PacketInLobbyChat,
+            PacketInLobbyRequestChatHistory,
+            PacketOutLobbyChat,
+            PacketOutLobbyChatHistory,
         );
         this.INIT_REGISTRY = true;
     }
