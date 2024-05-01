@@ -20,6 +20,7 @@ export interface ChatSender<U extends boolean = boolean, S extends boolean = boo
 
 }
 export type UserChatSender = ChatSender<true, false> & { id: UUID, key: EncryptKey | null };
+export type ChatReader = { key: EncryptKey, encryption: EncryptHandler };
 
 class SystemChatSender implements ChatSender<false, true> {
 
@@ -51,7 +52,7 @@ export interface ChatMessage {
 
     readonly rawData: Uint8Array;
 
-    getMessage(method?: EncryptHandler, receiverKey?: EncryptKey): string;
+    getMessage(encryption?: EncryptHandler | ChatReader, key?: EncryptKey): string;
 
     isWhisper(): boolean;
 
@@ -84,7 +85,7 @@ abstract class AbstractChatMessage implements ChatMessage {
         return (sender as unknown as { id: UUID }).id;
     }
 
-    getMessage(method?: EncryptHandler, receiverKey?: EncryptKey): string {
+    getMessage(method?: EncryptHandler | ChatReader, receiverKey?: EncryptKey): string {
         return utf8.decode(this.rawData);
     }
 
@@ -158,9 +159,14 @@ class WhisperChatMessage extends AbstractUserChatMessage {
         this.receiverID = receiverID;
     }
 
-    getMessage(method?: EncryptHandler, receiverKey?: EncryptKey): string {
+    getMessage(method?: EncryptHandler | ChatReader, receiverKey?: EncryptKey): string {
         if (this._unencrypted !== -1) return this._unencrypted;
-        if ((!method) || (!receiverKey)) throw new Error("Cannot get whisper message content without encryption key");
+        if (!method) throw new Error("Cannot get whisper message content without encryption key");
+        if ("key" in method) {
+            receiverKey = method["key"];
+            method = method["encryption"];
+        }
+        if (!receiverKey) throw new Error("Cannot get whisper message content without encryption key");
         const senderKey: EncryptKey | null = this.sender.key;
         if (!senderKey) throw new Error("Whisper message sender key is not set");
         const data: Uint8Array = method.decrypt(this.rawData, senderKey, receiverKey);

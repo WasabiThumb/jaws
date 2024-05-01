@@ -9,5 +9,18 @@ client.login("wasabi").then((user) => {
 
     client.lobbies.create("Test Lobby").then((lobby) => {
         console.log("Lobby created: " + lobby.code);
+
+        // Log chat messages as they arrive.
+        // Use lobby.chat.getMessageHistory() for a list of all canonical chat messages.
+        lobby.chat.on("message", (event) => {
+            console.log(`${event.message.sender.name}: ${event.content}`);
+        });
+
+        lobby.chat.broadcast("Hello everyone!"); // Send a message to everyone
+
+        // This will show up in chat twice since the server networks whispers unconditionally.
+        // The first time it shows up, it will use the original content specified.
+        // The second time it shows up, it will use the content decrypted using our private key.
+        lobby.chat.whisper(client.user, "Secret message to myself!");
     });
 }).catch(console.error);

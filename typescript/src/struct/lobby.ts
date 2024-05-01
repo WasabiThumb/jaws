@@ -2,6 +2,16 @@ import {User} from "./user";
 import nacl from "tweetnacl";
 import {ChatMessage} from "./chat";
 
+export namespace LobbyChat {
+
+    export type MessageEvent = { type: "message", message: ChatMessage, content: string };
+    export type Event = MessageEvent;
+    export type EventMap = {
+        "message": EventMap;
+    };
+
+}
+
 export interface LobbyChat {
 
     readonly lobby: Lobby;
@@ -15,6 +25,10 @@ export interface LobbyChat {
     whisper(receiver: User, content: string): ChatMessage;
 
     refresh(): Promise<void>;
+
+    on<T extends keyof LobbyChat.EventMap, E extends LobbyChat.EventMap[T] & LobbyChat.Event>(event: T, cb: (event: E) => void): void;
+
+    off(event: keyof LobbyChat.EventMap, cb: ((event: LobbyChat.Event) => void)): void;
 
 }
 

@@ -6,10 +6,11 @@ import {CompressHandler} from "../../../compress/struct";
 import {Lobby} from "../../../struct/lobby";
 import {ClientUser} from "../user";
 import ClientLobby from "../lobby";
+import {ChatReader} from "../../../struct/chat";
 
 type Connection = { sendPacket(packet: Packet): void };
 
-export class ClientLocalUser implements ClientUser {
+export class ClientLocalUser implements ClientUser, ChatReader {
 
     readonly connection: Connection;
     readonly id: UUID;

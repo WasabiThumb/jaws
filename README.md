@@ -22,8 +22,7 @@ key below to know what has been implemented.** ⚠️
 - 🚧 User data storage with options for persistence
 - 🚧 Lobbies & matchmaking
   - ✅ Basic lobby creation & joining
-  - 🚧 Chat
-    - Almost done, some loose ends on the client
+  - ✅ Chat
   - 🚧 Matchmaking (with regional load balancing)
 - 🐛 Packet compression
   - ZLib is functional on the client. Server is not a fan of the

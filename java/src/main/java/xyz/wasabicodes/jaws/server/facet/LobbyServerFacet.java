@@ -68,6 +68,7 @@ public class LobbyServerFacet extends ServerFacetAdapter {
         if (received instanceof PacketInLobbyCreate create) {
             ServerLobby sl = createLobby(create.name, user);
             sl.broadcastData(create.transaction);
+            this.announceJoin(ctx, sl, user);
         } else if (received instanceof PacketInLobbyJoin join) {
             int id = this.optimus.decode(join.lobbyCode);
             final ServerLobby old = user.getLobby();
@@ -81,9 +82,7 @@ public class LobbyServerFacet extends ServerFacetAdapter {
             } finally {
                 this.lobbyLock.unlock(stamp);
             }
-            if (ctx.getConfig().getBoolean(ServerConfigKey.LOBBY_JOIN_MESSAGES)) {
-                sl.getChat().broadcast("* " + user.getName() + " has joined the lobby");
-            }
+            this.announceJoin(ctx, sl, user);
             this.cleanupLobbyIfEmpty(old);
         } else if (received instanceof PacketInLobbyRequestPeerKey request) {
             ServerLobby sl = user.getLobby();
@@ -110,10 +109,16 @@ public class LobbyServerFacet extends ServerFacetAdapter {
         if (sl.removeUser(user)) {
             sl.broadcastData(-1);
             if (ctx.getConfig().getBoolean(ServerConfigKey.LOBBY_LEAVE_MESSAGES)) {
-                sl.getChat().broadcast("* " + user.getName() + " has left the lobby");
+                sl.getChat().broadcast(user.getName() + " has left the lobby");
             }
         }
         this.cleanupLobbyIfEmpty(sl);
+    }
+
+    private void announceJoin(JawsServer ctx, ServerLobby sl, ServerUser user) {
+        if (ctx.getConfig().getBoolean(ServerConfigKey.LOBBY_JOIN_MESSAGES)) {
+            sl.getChat().broadcast(user.getName() + " has joined the lobby");
+        }
     }
 
     //
