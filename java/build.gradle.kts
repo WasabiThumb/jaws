@@ -32,6 +32,9 @@ tasks.test {
 tasks.register("substitutions") {
     doFirst {
         file("src/main/resources/xyz/wasabicodes/jaws/protocol-version.txt")
+            .also {
+                it.parentFile.mkdirs()
+            }
             .let { FileOutputStream(it, false) }
             .use { out ->
                 val s: String = protocolVersion.toString()
