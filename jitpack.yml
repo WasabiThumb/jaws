@@ -1,0 +1,8 @@
+jdk:
+  - openjdk17
+install:
+  - echo "Using deferred install handler"
+  - cd java
+  - ./gradlew clean publishToMavenLocal -xtest
+env:
+  JITPACK_BUILD: "true"
