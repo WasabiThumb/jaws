@@ -48,6 +48,13 @@ Don't. You shouldn't use this yet. However, if you would like to anyways (and I'
 this here for myself), here's a guide.
 
 ### For Java (17)
+Reference the [test source for Java](https://github.com/WasabiThumb/jaws/blob/master/java/src/test/java/xyz/wasabicodes/jaws/JawsTest.java) for examples of how to use the library.
+
+#### With JitPack
+Add ``com.github.WasabiThumb:jaws:master-SNAPSHOT`` from the ``jitpack.io`` maven repo as a compile dependency
+to your project. See more info [here](https://jitpack.io/#WasabiThumb/jaws/master-SNAPSHOT).
+
+#### Building Locally
 1. Clone the repository and enter the ``java`` directory.
 2. Do ``./gradlew clean publishToMavenLocal`` (``./gradlew.bat`` for windows)
 3. Add ``xyz.wasabicodes.jaws`` as a dependency to your project
@@ -55,8 +62,6 @@ this here for myself), here's a guide.
    - Gradle
      - Groovy: ``implementation 'xyz.wasabicodes:jaws:1.0.0'``
      - Kotlin DSL: ``implementation("xyz.wasabicodes:jaws:1.0.0")``
-
-Reference the [test source for Java](https://github.com/WasabiThumb/jaws/blob/master/java/src/test/java/xyz/wasabicodes/jaws/JawsTest.java) for examples of how to use the library.
 
 ### For NodeJS
 Enter your project directory and run ``npm install 'https://gitpkg.now.sh/WasabiThumb/jaws?master'``.
